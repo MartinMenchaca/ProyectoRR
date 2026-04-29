@@ -14,7 +14,7 @@ El objetivo final es demostrar comunicaciones distribuidas en un sistema de movi
 
 ## Estado actual
 
-Fase 1 implementada:
+Fases implementadas:
 
 - Estructura base del proyecto.
 - Broker MQTT independiente con Aedes.
@@ -33,8 +33,11 @@ Fase 1 implementada:
 - Persistencia de mensajes MQTT validos en `events`.
 - Persistencia de telemetria en `telemetry`.
 - Creacion/actualizacion automatica de vehiculos al recibir telemetria.
+- Simulador IoT independiente en `apps/simulator`.
+- Publicacion periodica de telemetria para `BUS-001`, `TAXI-001` y `SCOOTER-001`.
+- Publicacion ocasional de eventos de mantenimiento por MQTT.
 
-Todavia no incluye frontend, simulador IoT completo, Socket.IO, pagos ni mantenimiento desde frontend.
+Todavia no incluye frontend, Socket.IO, pagos ni mantenimiento desde frontend.
 
 ## Requisitos
 
@@ -59,6 +62,12 @@ Terminal 2:
 
 ```bash
 npm run dev:backend
+```
+
+Terminal 3:
+
+```bash
+npm run simulate
 ```
 
 Por defecto:
