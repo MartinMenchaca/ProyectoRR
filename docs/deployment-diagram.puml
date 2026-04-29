@@ -1,0 +1,12 @@
+@startuml
+title Movilidad Inteligente - Diagrama de Despliegue
+
+node "Equipo local de demostracion" {
+  node "Proceso Broker MQTT\nNode.js + Aedes\nPuerto 1883" as BrokerNode
+  node "Proceso Backend\nNode.js + Express\nPuerto 3001" as BackendNode
+  database "Archivo SQLite\ndata/movilidad.sqlite" as DbNode
+}
+
+BackendNode --> DbNode : SQL
+
+@enduml

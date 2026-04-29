@@ -1,0 +1,18 @@
+@startuml
+title Movilidad Inteligente - Diagrama de Componentes
+
+package "Fase 1" {
+  [Broker MQTT\napps/broker] as Broker
+  [Backend REST\napps/backend] as Backend
+  database "SQLite\ndata/movilidad.sqlite" as SQLite
+}
+
+Backend --> SQLite : SQL
+
+note right of Broker
+  Servicio independiente con Aedes.
+  En fases posteriores recibira
+  publicaciones del simulador IoT.
+end note
+
+@enduml

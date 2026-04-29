@@ -1,0 +1,16 @@
+{
+  "name": "@movilidad/broker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Broker MQTT independiente para la POC Movilidad Inteligente.",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "aedes": "^0.51.3",
+    "dotenv": "^16.4.7"
+  }
+}

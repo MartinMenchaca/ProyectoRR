@@ -1,0 +1,17 @@
+{
+  "name": "movilidad-inteligente-poc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prueba de concepto escolar para demostrar comunicaciones distribuidas en movilidad inteligente.",
+  "scripts": {
+    "install:all": "npm install --workspaces",
+    "dev:broker": "npm run dev --workspace apps/broker",
+    "dev:backend": "npm run dev --workspace apps/backend",
+    "start:broker": "npm run start --workspace apps/broker",
+    "start:backend": "npm run start --workspace apps/backend"
+  },
+  "workspaces": [
+    "apps/broker",
+    "apps/backend"
+  ]
+}
