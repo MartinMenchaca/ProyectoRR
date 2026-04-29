@@ -7,15 +7,18 @@
     "install:all": "npm install --workspaces",
     "dev:broker": "npm run dev --workspace apps/broker",
     "dev:backend": "npm run dev --workspace apps/backend",
+    "dev:frontend": "npm run dev --workspace apps/frontend",
     "dev:simulator": "npm run dev --workspace apps/simulator",
     "simulate": "npm run simulate --workspace apps/simulator",
     "start:broker": "npm run start --workspace apps/broker",
     "start:backend": "npm run start --workspace apps/backend",
+    "start:frontend": "npm run preview --workspace apps/frontend",
     "start:simulator": "npm run start --workspace apps/simulator"
   },
   "workspaces": [
     "apps/broker",
     "apps/backend",
+    "apps/frontend",
     "apps/simulator"
   ]
 }

@@ -36,8 +36,10 @@ Fases implementadas:
 - Simulador IoT independiente en `apps/simulator`.
 - Publicacion periodica de telemetria para `BUS-001`, `TAXI-001` y `SCOOTER-001`.
 - Publicacion ocasional de eventos de mantenimiento por MQTT.
+- Frontend React + Vite en `apps/frontend`.
+- Interfaz visual tipo app movil usando REST con polling cada 2 segundos.
 
-Todavia no incluye frontend, Socket.IO, pagos ni mantenimiento desde frontend.
+Todavia no incluye Socket.IO, pagos ni mantenimiento desde frontend.
 
 ## Requisitos
 
@@ -70,11 +72,22 @@ Terminal 3:
 npm run simulate
 ```
 
+Terminal 4:
+
+```bash
+npm run dev:frontend
+```
+
 Por defecto:
 
 - Broker MQTT: `mqtt://localhost:1883`
-- Backend REST: `http://localhost:3001`
+- Backend REST local: `http://localhost:3001`
+- Backend REST en red local: `http://IP-DE-TU-PC:3001`
+- Frontend local: `http://localhost:5173`
+- Frontend en celular: `http://IP-DE-TU-PC:5173`
 - SQLite: `data/movilidad.sqlite`
+
+Para abrir la app desde un celular, usa la IP de tu computadora en la misma red Wi-Fi. El frontend ajusta automaticamente la URL del backend al mismo host con puerto `3001`.
 
 ## Pruebas rapidas
 

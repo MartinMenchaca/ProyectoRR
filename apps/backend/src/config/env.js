@@ -10,7 +10,7 @@ const databaseFile = process.env.DATABASE_FILE || "../../data/movilidad.sqlite";
 
 export const env = {
   nodeEnv: process.env.NODE_ENV || "development",
-  host: process.env.BACKEND_HOST || "localhost",
+  host: process.env.BACKEND_HOST || "0.0.0.0",
   port: Number(process.env.BACKEND_PORT || 3001),
   databaseFile: path.resolve(backendRoot, databaseFile),
   mqttUrl: process.env.MQTT_URL || "mqtt://localhost:1883"
