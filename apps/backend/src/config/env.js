@@ -12,5 +12,6 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || "development",
   host: process.env.BACKEND_HOST || "localhost",
   port: Number(process.env.BACKEND_PORT || 3001),
-  databaseFile: path.resolve(backendRoot, databaseFile)
+  databaseFile: path.resolve(backendRoot, databaseFile),
+  mqttUrl: process.env.MQTT_URL || "mqtt://localhost:1883"
 };
