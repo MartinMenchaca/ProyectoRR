@@ -1,7 +1,12 @@
-import { Battery, Gauge, Navigation, Signal } from "lucide-react";
+import { Battery, CreditCard, Gauge, Navigation, Signal, Wrench } from "lucide-react";
 import StatusBadge from "./StatusBadge.jsx";
 
-export default function VehicleStatusCard({ vehicle }) {
+export default function VehicleStatusCard({
+  vehicle,
+  actionState,
+  onSimulatePayment,
+  onSimulateMaintenance
+}) {
   if (!vehicle) {
     return (
       <section className="vehicle-card empty-card">
@@ -64,6 +69,33 @@ export default function VehicleStatusCard({ vehicle }) {
           <dd>{formatDate(vehicle.updated_at)}</dd>
         </div>
       </dl>
+
+      <div className="vehicle-action-row">
+        <button
+          type="button"
+          onClick={onSimulatePayment}
+          disabled={actionState?.status === "loading"}
+        >
+          <CreditCard size={17} />
+          {actionState?.type === "payment" && actionState?.status === "loading"
+            ? "Procesando..."
+            : "Simular pago"}
+        </button>
+        <button
+          type="button"
+          onClick={onSimulateMaintenance}
+          disabled={actionState?.status === "loading"}
+        >
+          <Wrench size={17} />
+          {actionState?.type === "maintenance" && actionState?.status === "loading"
+            ? "Procesando..."
+            : "Reportar mantenimiento"}
+        </button>
+      </div>
+
+      {actionState?.message ? (
+        <p className={`action-feedback is-${actionState.status}`}>{actionState.message}</p>
+      ) : null}
     </section>
   );
 }

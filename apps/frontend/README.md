@@ -13,9 +13,12 @@ Interfaz React + Vite para visualizar la prueba de concepto de Movilidad Intelig
 - Muestra tarjeta del vehiculo activo.
 - Muestra panel de operador con unidades activas.
 - Muestra logs recientes de eventos MQTT registrados en SQLite.
+- Permite crear pagos simulados desde la UI.
+- Permite crear reportes de mantenimiento simulados desde la UI.
+- Muestra pagos recientes y reportes de mantenimiento persistidos.
 - Muestra el flujo de comunicaciones distribuidas.
 
-No usa Google Maps, Mapbox, Firebase, WebSocket, autenticacion ni pasarelas de pago.
+No usa Google Maps, Mapbox, Firebase, autenticacion ni pasarelas de pago reales.
 
 ## Endpoints consumidos
 
@@ -23,6 +26,10 @@ No usa Google Maps, Mapbox, Firebase, WebSocket, autenticacion ni pasarelas de p
 GET /api/health
 GET /api/vehicles
 GET /api/events
+GET /api/payments
+GET /api/maintenance
+POST /api/payments/simulate
+POST /api/maintenance/simulate
 ```
 
 La app usa estos endpoints para carga inicial y respaldo. Ademas escucha por Socket.IO:
@@ -31,9 +38,18 @@ La app usa estos endpoints para carga inicial y respaldo. Ademas escucha por Soc
 vehicle:locationUpdated
 maintenance:reported
 event:created
+payment:created
 ```
 
 El polling REST sigue activo como fallback si WebSocket se desconecta.
+
+## Probar acciones simuladas
+
+1. Selecciona un vehiculo.
+2. Presiona `Simular pago`.
+3. Revisa `Pagos recientes` y el timeline.
+4. Presiona `Reportar mantenimiento`.
+5. Revisa `Mantenimiento`, la alerta visual y el timeline.
 
 ## Mapa simulado
 

@@ -40,8 +40,10 @@ Fases implementadas:
 - Interfaz visual tipo app movil usando REST con polling cada 2 segundos.
 - WebSocket con Socket.IO para actualizaciones en vivo desde el backend.
 - REST permanece como respaldo para carga inicial y recuperacion.
+- Pagos simulados desde la interfaz.
+- Reportes de mantenimiento simulados desde la interfaz.
 
-Todavia no incluye pagos ni mantenimiento desde frontend.
+Todavia no incluye pagos reales, autenticacion ni servicios externos.
 
 ## Requisitos
 
@@ -106,6 +108,8 @@ En PowerShell:
 Invoke-RestMethod http://localhost:3001/api/health
 Invoke-RestMethod http://localhost:3001/api/vehicles
 Invoke-RestMethod http://localhost:3001/api/events
+Invoke-RestMethod http://localhost:3001/api/payments
+Invoke-RestMethod http://localhost:3001/api/maintenance
 ```
 
 El endpoint `/api/health` tambien muestra el estado de WebSocket:
@@ -119,6 +123,32 @@ Busca:
 ```txt
 websocket.enabled
 websocket.connectedClients
+```
+
+## Prueba de pagos y mantenimiento
+
+Con broker, backend, simulador y frontend ejecutandose:
+
+1. Abre `http://localhost:5173`.
+2. Selecciona `BUS-001`, `TAXI-001` o `SCOOTER-001`.
+3. Presiona `Simular pago`.
+4. Verifica la confirmacion visual, la seccion `Pagos recientes` y el timeline.
+5. Presiona `Reportar mantenimiento`.
+6. Verifica la alerta visual, la seccion `Mantenimiento` y el timeline.
+
+Tambien puedes probar por REST:
+
+```powershell
+Invoke-RestMethod http://localhost:3001/api/payments/simulate -Method Post -ContentType "application/json" -Body '{"vehicleId":"BUS-001"}'
+Invoke-RestMethod http://localhost:3001/api/maintenance/simulate -Method Post -ContentType "application/json" -Body '{"vehicleId":"BUS-001"}'
+```
+
+Eventos Socket.IO emitidos:
+
+```txt
+payment:created
+maintenance:reported
+event:created
 ```
 
 ## Prueba manual MQTT

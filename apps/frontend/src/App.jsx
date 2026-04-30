@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getEvents, getHealth, getVehicles } from "./api/http.js";
+import {
+  getEvents,
+  getHealth,
+  getMaintenance,
+  getPayments,
+  getVehicles,
+  simulateMaintenance,
+  simulatePayment
+} from "./api/http.js";
 import { createSocket, SOCKET_URL } from "./api/socket.js";
 import MobileShell from "./components/MobileShell.jsx";
 import SystemStatus from "./components/SystemStatus.jsx";
@@ -9,6 +17,8 @@ import VehicleSelector from "./components/VehicleSelector.jsx";
 import OperatorPanel from "./components/OperatorPanel.jsx";
 import EventTimeline from "./components/EventTimeline.jsx";
 import CommunicationFlow from "./components/CommunicationFlow.jsx";
+import PaymentsPanel from "./components/PaymentsPanel.jsx";
+import MaintenancePanel from "./components/MaintenancePanel.jsx";
 
 const preferredVehicleOrder = ["BUS-001", "TAXI-001", "SCOOTER-001"];
 
@@ -16,8 +26,11 @@ export default function App() {
   const [health, setHealth] = useState(null);
   const [vehicles, setVehicles] = useState([]);
   const [events, setEvents] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [maintenanceReports, setMaintenanceReports] = useState([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState("BUS-001");
   const [loadErrors, setLoadErrors] = useState({});
+  const [actionState, setActionState] = useState({ type: "", status: "idle", message: "" });
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState(null);
   const [socketStatus, setSocketStatus] = useState("connecting");
@@ -25,10 +38,12 @@ export default function App() {
   const alertTimerRef = useRef(null);
 
   const loadData = useCallback(async () => {
-    const [healthResult, vehiclesResult, eventsResult] = await Promise.allSettled([
+    const [healthResult, vehiclesResult, eventsResult, paymentsResult, maintenanceResult] = await Promise.allSettled([
       getHealth(),
       getVehicles(),
-      getEvents()
+      getEvents(),
+      getPayments(),
+      getMaintenance()
     ]);
 
     const nextErrors = {};
@@ -60,6 +75,18 @@ export default function App() {
       setEvents(eventsResult.value);
     } else {
       nextErrors.events = "No se pudieron cargar los eventos recientes.";
+    }
+
+    if (paymentsResult.status === "fulfilled") {
+      setPayments(paymentsResult.value);
+    } else {
+      nextErrors.payments = "No se pudieron cargar los pagos recientes.";
+    }
+
+    if (maintenanceResult.status === "fulfilled") {
+      setMaintenanceReports(maintenanceResult.value);
+    } else {
+      nextErrors.maintenance = "No se pudieron cargar los reportes de mantenimiento.";
     }
 
     setLoadErrors(nextErrors);
@@ -115,8 +142,23 @@ export default function App() {
       setEvents((currentEvents) => mergeEvent(currentEvents, event));
     });
 
+    socket.on("payment:created", (payment) => {
+      setPayments((currentPayments) => mergeById(currentPayments, normalizePayment(payment)));
+      const vehicleId = payment?.vehicleId || payment?.vehicle_id || "unidad";
+      setLiveAlert(`Pago simulado registrado para ${vehicleId}.`);
+
+      if (alertTimerRef.current) {
+        window.clearTimeout(alertTimerRef.current);
+      }
+
+      alertTimerRef.current = window.setTimeout(() => {
+        setLiveAlert("");
+      }, 4200);
+    });
+
     socket.on("maintenance:reported", (maintenance) => {
-      const vehicleId = maintenance?.vehicleId || "unidad";
+      const vehicleId = maintenance?.vehicleId || maintenance?.vehicle_id || "unidad";
+      setMaintenanceReports((currentReports) => mergeById(currentReports, normalizeMaintenance(maintenance)));
       setLiveAlert(`Mantenimiento reportado para ${vehicleId}.`);
 
       if (alertTimerRef.current) {
@@ -156,6 +198,57 @@ export default function App() {
     sortedVehicles.find((vehicle) => preferredVehicleOrder.includes(vehicle.id)) ||
     null;
   const routedVehicles = sortedVehicles.filter((vehicle) => preferredVehicleOrder.includes(vehicle.id));
+
+  const handleSimulatePayment = useCallback(async () => {
+    if (!selectedVehicle) return;
+
+    setActionState({ type: "payment", status: "loading", message: "Procesando pago simulado..." });
+
+    try {
+      const payment = await simulatePayment({
+        vehicleId: selectedVehicle.id,
+        method: "card",
+        passengerName: "Usuario demo"
+      });
+
+      setPayments((currentPayments) => mergeById(currentPayments, normalizePayment(payment)));
+      setActionState({ type: "payment", status: "success", message: "Pago simulado completado." });
+      window.setTimeout(() => setActionState({ type: "", status: "idle", message: "" }), 2600);
+    } catch {
+      setActionState({ type: "payment", status: "error", message: "No se pudo simular el pago." });
+    }
+  }, [selectedVehicle]);
+
+  const handleSimulateMaintenance = useCallback(async () => {
+    if (!selectedVehicle) return;
+
+    setActionState({
+      type: "maintenance",
+      status: "loading",
+      message: "Reportando mantenimiento simulado..."
+    });
+
+    try {
+      const report = await simulateMaintenance({
+        vehicleId: selectedVehicle.id,
+        type: "battery_low",
+        severity: "medium",
+        description: "Nivel de bateria bajo detectado en prueba de concepto.",
+        status: "open"
+      });
+
+      setMaintenanceReports((currentReports) => mergeById(currentReports, normalizeMaintenance(report)));
+      setActionState({ type: "maintenance", status: "success", message: "Mantenimiento reportado." });
+      window.setTimeout(() => setActionState({ type: "", status: "idle", message: "" }), 2600);
+    } catch {
+      setActionState({
+        type: "maintenance",
+        status: "error",
+        message: "No se pudo reportar mantenimiento."
+      });
+    }
+  }, [selectedVehicle]);
+
   const globalError =
     loadErrors.health && loadErrors.vehicles
       ? "No se pudo conectar con el backend. Reintentando conexion..."
@@ -186,10 +279,18 @@ export default function App() {
         selectedVehicleId={selectedVehicle?.id}
         onSelectVehicle={setSelectedVehicleId}
         loading={loading}
+        actionState={actionState}
+        onSimulatePayment={handleSimulatePayment}
+        onSimulateMaintenance={handleSimulateMaintenance}
       />
 
       <section className="detail-grid">
-        <VehicleStatusCard vehicle={selectedVehicle} />
+        <VehicleStatusCard
+          vehicle={selectedVehicle}
+          actionState={actionState}
+          onSimulatePayment={handleSimulatePayment}
+          onSimulateMaintenance={handleSimulateMaintenance}
+        />
         <VehicleSelector
           vehicles={routedVehicles}
           selectedVehicleId={selectedVehicle?.id}
@@ -198,6 +299,11 @@ export default function App() {
       </section>
 
       <OperatorPanel vehicles={sortedVehicles} selectedVehicleId={selectedVehicle?.id} />
+
+      <section className="operations-grid">
+        <PaymentsPanel payments={payments} loading={loading} error={loadErrors.payments} />
+        <MaintenancePanel reports={maintenanceReports} loading={loading} error={loadErrors.maintenance} />
+      </section>
 
       <EventTimeline events={events} loading={loading} error={loadErrors.events} />
 
@@ -260,6 +366,39 @@ function mergeEvent(currentEvents, event) {
   if (alreadyExists) return currentEvents;
 
   return [normalizedEvent, ...currentEvents].slice(0, 100);
+}
+
+function mergeById(currentItems, item) {
+  if (!item) return currentItems;
+
+  if (!item.id) {
+    return [item, ...currentItems].slice(0, 50);
+  }
+
+  const exists = currentItems.some((currentItem) => currentItem.id === item.id);
+  if (exists) return currentItems;
+  return [item, ...currentItems].slice(0, 50);
+}
+
+function normalizePayment(payment) {
+  if (!payment) return payment;
+
+  return {
+    ...payment,
+    vehicleId: payment.vehicleId || payment.vehicle_id,
+    passengerName: payment.passengerName || payment.passenger_name,
+    timestamp: payment.timestamp || payment.created_at
+  };
+}
+
+function normalizeMaintenance(report) {
+  if (!report) return report;
+
+  return {
+    ...report,
+    vehicleId: report.vehicleId || report.vehicle_id,
+    timestamp: report.timestamp || report.created_at
+  };
 }
 
 function parsePayload(payloadJson) {

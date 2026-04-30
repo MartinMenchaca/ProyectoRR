@@ -1092,6 +1092,63 @@ button {
   text-align: right;
 }
 
+.vehicle-action-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.vehicle-action-row button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+
+.vehicle-action-row button:first-child {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.24);
+}
+
+.vehicle-action-row button:last-child {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.24);
+}
+
+.vehicle-action-row button:disabled,
+.sheet-actions button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.action-feedback,
+.sheet-message {
+  color: var(--muted);
+}
+
+.action-feedback {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.action-feedback.is-success,
+.sheet-message.is-success {
+  color: #a7f3d0;
+}
+
+.action-feedback.is-error,
+.sheet-message.is-error {
+  color: #fecaca;
+}
+
 .selector-card__header span {
   color: var(--muted);
   font-weight: 800;
@@ -1193,6 +1250,75 @@ button {
 .empty-text {
   padding: 16px;
   color: var(--muted);
+}
+
+.operations-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.operations-card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--panel);
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(22px);
+}
+
+.operations-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.operation-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.operation-item div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.operation-item strong {
+  color: var(--text);
+}
+
+.operation-item span,
+.operation-item time,
+.operation-item p {
+  color: var(--muted);
+}
+
+.operation-item span,
+.operation-item strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.operation-item time {
+  white-space: nowrap;
+  font-size: 0.82rem;
+}
+
+.operation-item--maintenance {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 1.4fr) auto;
+}
+
+.operation-item--maintenance p {
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .timeline-list {
@@ -1365,6 +1491,7 @@ button {
 @media (max-width: 980px) {
   .hero-grid,
   .detail-grid,
+  .operations-grid,
   .flow-track {
     grid-template-columns: 1fr;
   }
@@ -1534,6 +1661,16 @@ button {
 
   .sheet-actions {
     flex-direction: column;
+  }
+
+  .vehicle-action-row,
+  .operation-item,
+  .operation-item--maintenance {
+    grid-template-columns: 1fr;
+  }
+
+  .operation-item time {
+    white-space: normal;
   }
 
   .sheet-main h3 {

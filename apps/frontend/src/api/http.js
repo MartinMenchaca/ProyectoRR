@@ -61,4 +61,32 @@ export async function getEvents() {
   return result.data || [];
 }
 
+export async function getPayments() {
+  const result = await request("/payments");
+  return result.data || [];
+}
+
+export async function getMaintenance() {
+  const result = await request("/maintenance");
+  return result.data || [];
+}
+
+export async function simulatePayment(payload) {
+  const result = await request("/payments/simulate", {
+    method: "POST",
+    body: JSON.stringify(payload || {})
+  });
+
+  return result.data;
+}
+
+export async function simulateMaintenance(payload) {
+  const result = await request("/maintenance/simulate", {
+    method: "POST",
+    body: JSON.stringify(payload || {})
+  });
+
+  return result.data;
+}
+
 export { API_URL };

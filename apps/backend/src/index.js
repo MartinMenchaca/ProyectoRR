@@ -7,6 +7,8 @@ import { initializeDatabase } from "./db/database.js";
 import { healthRouter } from "./routes/health.routes.js";
 import { vehiclesRouter } from "./routes/vehicles.routes.js";
 import { eventsRouter } from "./routes/events.routes.js";
+import { paymentsRouter } from "./routes/payments.routes.js";
+import { maintenanceRouter } from "./routes/maintenance.routes.js";
 import { startMqttClient } from "./mqtt/mqttClient.js";
 import { initializeSocketServer } from "./sockets/socketServer.js";
 
@@ -19,6 +21,8 @@ app.use(express.json());
 app.use("/api", healthRouter);
 app.use("/api", vehiclesRouter);
 app.use("/api", eventsRouter);
+app.use("/api", paymentsRouter);
+app.use("/api", maintenanceRouter);
 
 app.use((error, _req, res, _next) => {
   console.error("[backend] error:", error);

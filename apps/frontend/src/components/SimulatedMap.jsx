@@ -16,15 +16,17 @@ export default function SimulatedMap({
   selectedVehicle,
   selectedVehicleId,
   onSelectVehicle,
-  loading = false
+  loading = false,
+  actionState,
+  onSimulatePayment,
+  onSimulateMaintenance
 }) {
-  const [actionMessage, setActionMessage] = useState("");
   const [sheetExpanded, setSheetExpanded] = useState(() => {
     if (typeof window === "undefined") return true;
     return window.innerWidth > 760;
   });
 
-  // Refs to vehicle DOM elements — updated at 60fps without React re-renders
+  // Vehicle DOM refs are updated at 60fps without React re-renders.
   const vehiclePositionRefs = useRef({});
 
   // 60fps animation loop: writes positions directly to DOM
@@ -54,12 +56,6 @@ export default function SimulatedMap({
 
     return () => window.cancelAnimationFrame(frameId);
   }, [vehicles]);
-
-  function handlePreparedAction(type) {
-    const label = type === "payment" ? "Pago simulado" : "Reporte de mantenimiento";
-    setActionMessage(`${label} preparado para la siguiente fase.`);
-    window.setTimeout(() => setActionMessage(""), 2600);
-  }
 
   return (
     <section className="map-card">
@@ -242,7 +238,7 @@ export default function SimulatedMap({
             </g>
           </svg>
 
-          {/* Vehicle markers: forwardRef → positions updated at 60fps via DOM ref */}
+          {/* Vehicle marker positions are updated at 60fps via DOM refs. */}
           {vehicles.map((vehicle) => {
             const route = vehicleRoutes[vehicle.id];
             if (!route) return null;
@@ -304,16 +300,30 @@ export default function SimulatedMap({
                   <span>{formatTime(selectedVehicle.updated_at)}</span>
                 </div>
                 <div className="sheet-actions">
-                  <button type="button" onClick={() => handlePreparedAction("payment")}>
+                  <button
+                    type="button"
+                    onClick={onSimulatePayment}
+                    disabled={actionState?.status === "loading"}
+                  >
                     <CreditCard size={17} />
-                    Simular pago
+                    {actionState?.type === "payment" && actionState?.status === "loading"
+                      ? "Procesando..."
+                      : "Simular pago"}
                   </button>
-                  <button type="button" onClick={() => handlePreparedAction("maintenance")}>
+                  <button
+                    type="button"
+                    onClick={onSimulateMaintenance}
+                    disabled={actionState?.status === "loading"}
+                  >
                     <Wrench size={17} />
-                    Reportar mantenimiento
+                    {actionState?.type === "maintenance" && actionState?.status === "loading"
+                      ? "Procesando..."
+                      : "Reportar mantenimiento"}
                   </button>
                 </div>
-                {actionMessage ? <p className="sheet-message">{actionMessage}</p> : null}
+                {actionState?.message ? (
+                  <p className={`sheet-message is-${actionState.status}`}>{actionState.message}</p>
+                ) : null}
               </>
             ) : (
               <button
@@ -325,7 +335,7 @@ export default function SimulatedMap({
                 <span className="compact-status-dot" />
                 <span className="compact-vehicle">
                   <strong>{selectedVehicle.id}</strong>
-                  <small>{selectedVehicle.status || "en ruta"} — tocar para ver detalles</small>
+                  <small>{selectedVehicle.status || "en ruta"} - tocar para ver detalles</small>
                 </span>
                 <span className="compact-speed">
                   {Math.round(Number(selectedVehicle.speed || 0))}
