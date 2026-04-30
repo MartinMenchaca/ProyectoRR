@@ -38,8 +38,10 @@ Fases implementadas:
 - Publicacion ocasional de eventos de mantenimiento por MQTT.
 - Frontend React + Vite en `apps/frontend`.
 - Interfaz visual tipo app movil usando REST con polling cada 2 segundos.
+- WebSocket con Socket.IO para actualizaciones en vivo desde el backend.
+- REST permanece como respaldo para carga inicial y recuperacion.
 
-Todavia no incluye Socket.IO, pagos ni mantenimiento desde frontend.
+Todavia no incluye pagos ni mantenimiento desde frontend.
 
 ## Requisitos
 
@@ -83,6 +85,7 @@ Por defecto:
 - Broker MQTT: `mqtt://localhost:1883`
 - Backend REST local: `http://localhost:3001`
 - Backend REST en red local: `http://IP-DE-TU-PC:3001`
+- Socket.IO: `http://localhost:3001`
 - Frontend local: `http://localhost:5173`
 - Frontend en celular: `http://IP-DE-TU-PC:5173`
 - SQLite: `data/movilidad.sqlite`
@@ -103,6 +106,19 @@ En PowerShell:
 Invoke-RestMethod http://localhost:3001/api/health
 Invoke-RestMethod http://localhost:3001/api/vehicles
 Invoke-RestMethod http://localhost:3001/api/events
+```
+
+El endpoint `/api/health` tambien muestra el estado de WebSocket:
+
+```powershell
+Invoke-RestMethod http://localhost:3001/api/health
+```
+
+Busca:
+
+```txt
+websocket.enabled
+websocket.connectedClients
 ```
 
 ## Prueba manual MQTT

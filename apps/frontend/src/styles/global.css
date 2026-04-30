@@ -213,6 +213,21 @@ button {
   font-size: 0.86rem;
 }
 
+.live-alert {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 18px;
+  color: #fde68a;
+  background:
+    linear-gradient(90deg, rgba(245, 158, 11, 0.12), rgba(17, 24, 39, 0.76)),
+    rgba(17, 24, 39, 0.72);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24);
+  animation: pageIn 240ms ease-out both;
+}
+
 .system-card,
 .map-card,
 .vehicle-card,
@@ -283,7 +298,7 @@ button {
 
 .status-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
   margin-top: 18px;
 }
@@ -318,6 +333,15 @@ button {
 
 .status-badge.is-green {
   color: #a7f3d0;
+}
+
+.status-badge.is-blue {
+  color: #bfdbfe;
+}
+
+.status-badge.is-blue .status-dot {
+  background: var(--blue);
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.56);
 }
 
 .status-badge.is-muted .status-dot {

@@ -1,4 +1,5 @@
 import { getDatabase } from "../db/database.js";
+import { emitSocketEvent } from "../sockets/socketServer.js";
 import { parseVehicleTopic } from "./topics.js";
 
 export async function processMqttMessage(topic, rawMessage) {
@@ -22,7 +23,8 @@ export async function processMqttMessage(topic, rawMessage) {
     await ensureVehicleExists(database, vehicleId, payload, now);
   }
 
-  await database.run(
+  const createdAt = payload.timestamp || now;
+  const eventInsert = await database.run(
     `INSERT INTO events (vehicle_id, event_type, channel, topic, payload_json, created_at)
      VALUES (?, ?, ?, ?, ?, ?)`,
     [
@@ -31,14 +33,33 @@ export async function processMqttMessage(topic, rawMessage) {
       "mqtt",
       topic,
       JSON.stringify(payload),
-      payload.timestamp || now
+      createdAt
     ]
   );
 
   console.log(`[mqtt] evento guardado en base de datos: ${eventType}`);
+  emitSocketEvent("event:created", {
+    id: eventInsert.lastID,
+    vehicle_id: vehicleId,
+    event_type: eventType,
+    channel: "mqtt",
+    topic,
+    payload_json: JSON.stringify(payload),
+    payload,
+    created_at: createdAt
+  });
 
   if (messageType === "telemetry") {
-    await saveTelemetry(database, vehicleId, payload, now);
+    const telemetry = await saveTelemetry(database, vehicleId, payload, now);
+
+    if (telemetry) {
+      emitSocketEvent("vehicle:locationUpdated", telemetry);
+    }
+  }
+
+  if (messageType === "maintenance") {
+    const maintenance = await saveMaintenance(database, vehicleId, payload, now);
+    emitSocketEvent("maintenance:reported", maintenance);
   }
 }
 
@@ -52,7 +73,7 @@ function getEventType(topic, messageType) {
 async function saveTelemetry(database, vehicleId, payload, now) {
   if (!vehicleId) {
     console.error("[mqtt] telemetria ignorada: no se pudo identificar el vehiculo desde el topico.");
-    return;
+    return null;
   }
 
   const lat = Number(payload.lat);
@@ -60,7 +81,7 @@ async function saveTelemetry(database, vehicleId, payload, now) {
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     console.error(`[mqtt] telemetria invalida para ${vehicleId}: lat/lng requeridos.`);
-    return;
+    return null;
   }
 
   const speed = Number.isFinite(Number(payload.speed)) ? Number(payload.speed) : 0;
@@ -87,6 +108,18 @@ async function saveTelemetry(database, vehicleId, payload, now) {
   );
 
   console.log(`[mqtt] telemetria guardada y vehiculo actualizado: ${vehicleId}`);
+
+  return {
+    vehicleId,
+    name: payload.name || vehicleId,
+    type: payload.type || "vehicle",
+    lat,
+    lng,
+    speed,
+    battery,
+    status,
+    timestamp
+  };
 }
 
 async function ensureVehicleExists(database, vehicleId, payload, now) {
@@ -109,4 +142,35 @@ async function ensureVehicleExists(database, vehicleId, payload, now) {
       payload.timestamp || now
     ]
   );
+}
+
+async function saveMaintenance(database, vehicleId, payload, now) {
+  const timestamp = payload.timestamp || now;
+  const maintenance = {
+    vehicleId: vehicleId || payload.vehicleId || null,
+    type: payload.type || "preventive_check",
+    severity: payload.severity || "low",
+    description: payload.description || "Reporte de mantenimiento recibido desde MQTT.",
+    status: payload.status || "open",
+    timestamp
+  };
+
+  if (maintenance.vehicleId) {
+    await database.run(
+      `INSERT INTO maintenance_reports (vehicle_id, type, severity, description, status, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        maintenance.vehicleId,
+        maintenance.type,
+        maintenance.severity,
+        maintenance.description,
+        maintenance.status,
+        maintenance.timestamp
+      ]
+    );
+  }
+
+  console.log(`[mqtt] mantenimiento reportado: ${maintenance.vehicleId || "sin vehiculo"}`);
+
+  return maintenance;
 }

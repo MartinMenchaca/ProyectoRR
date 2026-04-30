@@ -5,6 +5,7 @@ Interfaz React + Vite para visualizar la prueba de concepto de Movilidad Intelig
 ## Que hace
 
 - Consulta el backend por REST.
+- Se conecta al backend por Socket.IO para eventos en vivo.
 - Muestra estado de Backend, SQLite y MQTT.
 - Visualiza vehiculos en un mapa simulado con SVG/CSS.
 - Renderiza una red urbana estructurada con avenidas, calles, intersecciones, semaforos y rutas por vehiculo.
@@ -24,7 +25,15 @@ GET /api/vehicles
 GET /api/events
 ```
 
-La app refresca estos datos cada 2 segundos mediante HTTP/REST.
+La app usa estos endpoints para carga inicial y respaldo. Ademas escucha por Socket.IO:
+
+```txt
+vehicle:locationUpdated
+maintenance:reported
+event:created
+```
+
+El polling REST sigue activo como fallback si WebSocket se desconecta.
 
 ## Mapa simulado
 
@@ -42,6 +51,7 @@ Crea un `.env` local si necesitas cambiar la URL del backend:
 
 ```txt
 VITE_API_URL=http://localhost:3001/api
+VITE_SOCKET_URL=http://localhost:3001
 ```
 
 Si abres la app desde un celular usando la IP de tu computadora, por ejemplo:
@@ -98,6 +108,7 @@ El frontend representa el nodo visual de la arquitectura:
 
 ```txt
 Simulador IoT -> Broker MQTT -> Backend -> SQLite -> Frontend
+Backend -> Socket.IO -> Frontend
 ```
 
-Para la Fase 4, el frontend consume datos por REST. Las actualizaciones en tiempo real con Socket.IO quedan reservadas para una fase posterior.
+El frontend consume REST para estado inicial y usa Socket.IO para actualizaciones en vivo.
