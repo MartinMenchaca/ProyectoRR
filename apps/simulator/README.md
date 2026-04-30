@@ -10,6 +10,8 @@ Proceso Node.js independiente que simula vehiculos de movilidad inteligente publ
 
 Cada vehiculo avanza por una ruta predefinida, cambia su velocidad, reduce bateria gradualmente y mantiene estado `in_route`.
 
+El simulador no publica mantenimientos automaticos. Los reportes de mantenimiento de la POC se crean manualmente desde la interfaz o con `POST /api/maintenance/simulate`.
+
 ## Topicos MQTT
 
 Telemetria:
@@ -20,13 +22,7 @@ movilidad/vehicles/TAXI-001/telemetry
 movilidad/vehicles/SCOOTER-001/telemetry
 ```
 
-Mantenimiento:
-
-```txt
-movilidad/vehicles/BUS-001/maintenance
-movilidad/vehicles/TAXI-001/maintenance
-movilidad/vehicles/SCOOTER-001/maintenance
-```
+Los topicos de mantenimiento siguen existiendo en el backend, pero este simulador ya no los publica automaticamente.
 
 ## Ejecucion
 

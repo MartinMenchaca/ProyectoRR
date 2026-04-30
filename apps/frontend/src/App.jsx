@@ -199,14 +199,15 @@ export default function App() {
     null;
   const routedVehicles = sortedVehicles.filter((vehicle) => preferredVehicleOrder.includes(vehicle.id));
 
-  const handleSimulatePayment = useCallback(async () => {
-    if (!selectedVehicle) return;
+  const handleSimulatePayment = useCallback(async (vehicleId) => {
+    const targetVehicleId = vehicleId || selectedVehicle?.id;
+    if (!targetVehicleId) return;
 
     setActionState({ type: "payment", status: "loading", message: "Procesando pago simulado..." });
 
     try {
       const payment = await simulatePayment({
-        vehicleId: selectedVehicle.id,
+        vehicleId: targetVehicleId,
         method: "card",
         passengerName: "Usuario demo"
       });
@@ -219,8 +220,9 @@ export default function App() {
     }
   }, [selectedVehicle]);
 
-  const handleSimulateMaintenance = useCallback(async () => {
-    if (!selectedVehicle) return;
+  const handleSimulateMaintenance = useCallback(async (vehicleId) => {
+    const targetVehicleId = vehicleId || selectedVehicle?.id;
+    if (!targetVehicleId) return;
 
     setActionState({
       type: "maintenance",
@@ -230,7 +232,7 @@ export default function App() {
 
     try {
       const report = await simulateMaintenance({
-        vehicleId: selectedVehicle.id,
+        vehicleId: targetVehicleId,
         type: "battery_low",
         severity: "medium",
         description: "Nivel de bateria bajo detectado en prueba de concepto.",

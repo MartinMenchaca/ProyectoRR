@@ -302,7 +302,7 @@ export default function SimulatedMap({
                 <div className="sheet-actions">
                   <button
                     type="button"
-                    onClick={onSimulatePayment}
+                    onClick={() => onSimulatePayment(selectedVehicle.id)}
                     disabled={actionState?.status === "loading"}
                   >
                     <CreditCard size={17} />
@@ -312,7 +312,7 @@ export default function SimulatedMap({
                   </button>
                   <button
                     type="button"
-                    onClick={onSimulateMaintenance}
+                    onClick={() => onSimulateMaintenance(selectedVehicle.id)}
                     disabled={actionState?.status === "loading"}
                   >
                     <Wrench size={17} />

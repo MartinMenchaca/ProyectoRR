@@ -35,7 +35,7 @@ Fases implementadas:
 - Creacion/actualizacion automatica de vehiculos al recibir telemetria.
 - Simulador IoT independiente en `apps/simulator`.
 - Publicacion periodica de telemetria para `BUS-001`, `TAXI-001` y `SCOOTER-001`.
-- Publicacion ocasional de eventos de mantenimiento por MQTT.
+- Simulador limitado a telemetria MQTT; los mantenimientos se registran manualmente desde la UI o REST.
 - Frontend React + Vite en `apps/frontend`.
 - Interfaz visual tipo app movil usando REST con polling cada 2 segundos.
 - WebSocket con Socket.IO para actualizaciones en vivo desde el backend.
@@ -165,7 +165,7 @@ En PowerShell, tambien puedes publicar usando Node para evitar problemas de comi
 node --input-type=module -e "import mqtt from 'mqtt'; const client = mqtt.connect('mqtt://localhost:1883'); client.on('connect', () => { client.publish('movilidad/vehicles/BUS-001/telemetry', JSON.stringify({ lat: 27.4831, lng: -109.9308, speed: 32, battery: 91, status: 'in_route', timestamp: '2026-04-29T08:00:00.000Z' }), {}, () => client.end()); });"
 ```
 
-Tambien puedes publicar un evento de mantenimiento:
+Tambien puedes publicar un evento MQTT de mantenimiento. Quedara registrado en `events` como evidencia del canal MQTT, pero no creara un reporte operativo; los reportes se crean manualmente desde la UI o REST:
 
 ```bash
 npx mqtt pub -h localhost -p 1883 -t movilidad/vehicles/BUS-001/maintenance -m "{\"type\":\"battery_check\",\"severity\":\"low\",\"description\":\"Revision preventiva simulada\"}"

@@ -45,7 +45,6 @@ client.on("close", () => {
 function publishAllVehicles() {
   for (const vehicle of vehicles) {
     publishTelemetry(vehicle);
-    maybePublishMaintenance(vehicle);
   }
 }
 
@@ -80,36 +79,6 @@ function publishTelemetry(vehicle) {
     }
 
     console.log(`[simulator] publicando telemetria de ${vehicle.vehicleId}`);
-  });
-}
-
-function maybePublishMaintenance(vehicle) {
-  const state = stateByVehicle.get(vehicle.vehicleId);
-
-  if (state.tick === 0 || state.tick % vehicle.maintenanceEveryTicks !== 0) {
-    return;
-  }
-
-  const payload = {
-    vehicleId: vehicle.vehicleId,
-    type: state.battery <= 35 ? "battery_low" : "preventive_check",
-    severity: state.battery <= 35 ? "medium" : "low",
-    description:
-      state.battery <= 35
-        ? "Nivel de batería bajo detectado por el dispositivo IoT simulado."
-        : "Revision preventiva generada por el dispositivo IoT simulado.",
-    status: "open",
-    timestamp: new Date().toISOString()
-  };
-
-  const topic = `movilidad/vehicles/${vehicle.vehicleId}/maintenance`;
-  client.publish(topic, JSON.stringify(payload), { qos: 0 }, (error) => {
-    if (error) {
-      console.error(`[simulator] error publicando mantenimiento de ${vehicle.vehicleId}:`, error.message);
-      return;
-    }
-
-    console.log(`[simulator] publicando mantenimiento de ${vehicle.vehicleId}`);
   });
 }
 

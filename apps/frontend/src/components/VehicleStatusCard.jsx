@@ -73,7 +73,7 @@ export default function VehicleStatusCard({
       <div className="vehicle-action-row">
         <button
           type="button"
-          onClick={onSimulatePayment}
+          onClick={() => onSimulatePayment(vehicle.id)}
           disabled={actionState?.status === "loading"}
         >
           <CreditCard size={17} />
@@ -83,7 +83,7 @@ export default function VehicleStatusCard({
         </button>
         <button
           type="button"
-          onClick={onSimulateMaintenance}
+          onClick={() => onSimulateMaintenance(vehicle.id)}
           disabled={actionState?.status === "loading"}
         >
           <Wrench size={17} />

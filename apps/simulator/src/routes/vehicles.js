@@ -5,7 +5,6 @@ export const vehicles = [
     name: "Ruta Centro",
     baseSpeed: 38,
     batteryDrain: 0.35,
-    maintenanceEveryTicks: 12,
     route: [
       { lat: 27.4828, lng: -109.9304 },
       { lat: 27.4832, lng: -109.9312 },
@@ -22,7 +21,6 @@ export const vehicles = [
     name: "Taxi Eléctrico Norte",
     baseSpeed: 46,
     batteryDrain: 0.45,
-    maintenanceEveryTicks: 15,
     route: [
       { lat: 27.4891, lng: -109.9368 },
       { lat: 27.4898, lng: -109.9359 },
@@ -39,7 +37,6 @@ export const vehicles = [
     name: "Scooter Plaza",
     baseSpeed: 22,
     batteryDrain: 0.55,
-    maintenanceEveryTicks: 18,
     route: [
       { lat: 27.4814, lng: -109.9279 },
       { lat: 27.4818, lng: -109.9272 },

@@ -24,7 +24,7 @@ maintenanceRouter.post("/maintenance/simulate", async (req, res, next) => {
   try {
     const database = await getDatabase();
     const now = new Date().toISOString();
-    const vehicleId = await resolveVehicleId(database, req.body?.vehicleId);
+    const vehicleId = await resolveVehicleId(database, req.body?.vehicleId || req.body?.vehicle_id);
     const type = req.body?.type || "battery_low";
     const severity = req.body?.severity || "medium";
     const description =

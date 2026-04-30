@@ -58,8 +58,7 @@ export async function processMqttMessage(topic, rawMessage) {
   }
 
   if (messageType === "maintenance") {
-    const maintenance = await saveMaintenance(database, vehicleId, payload, now);
-    emitSocketEvent("maintenance:reported", maintenance);
+    console.log("[mqtt] mantenimiento recibido como evento MQTT; no se registra reporte manual.");
   }
 }
 
@@ -142,35 +141,4 @@ async function ensureVehicleExists(database, vehicleId, payload, now) {
       payload.timestamp || now
     ]
   );
-}
-
-async function saveMaintenance(database, vehicleId, payload, now) {
-  const timestamp = payload.timestamp || now;
-  const maintenance = {
-    vehicleId: vehicleId || payload.vehicleId || null,
-    type: payload.type || "preventive_check",
-    severity: payload.severity || "low",
-    description: payload.description || "Reporte de mantenimiento recibido desde MQTT.",
-    status: payload.status || "open",
-    timestamp
-  };
-
-  if (maintenance.vehicleId) {
-    await database.run(
-      `INSERT INTO maintenance_reports (vehicle_id, type, severity, description, status, created_at)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        maintenance.vehicleId,
-        maintenance.type,
-        maintenance.severity,
-        maintenance.description,
-        maintenance.status,
-        maintenance.timestamp
-      ]
-    );
-  }
-
-  console.log(`[mqtt] mantenimiento reportado: ${maintenance.vehicleId || "sin vehiculo"}`);
-
-  return maintenance;
 }

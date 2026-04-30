@@ -24,7 +24,7 @@ paymentsRouter.post("/payments/simulate", async (req, res, next) => {
   try {
     const database = await getDatabase();
     const now = new Date().toISOString();
-    const vehicleId = await resolveVehicleId(database, req.body?.vehicleId);
+    const vehicleId = await resolveVehicleId(database, req.body?.vehicleId || req.body?.vehicle_id);
     const amount = getAmount(req.body?.amount);
     const method = req.body?.method || "card";
     const passengerName = req.body?.passengerName || "Usuario demo";
