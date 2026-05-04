@@ -644,7 +644,7 @@ button {
   border: 0;
   background: transparent;
   cursor: pointer;
-  /* No left/top transitions — position written directly by rAF at 60fps */
+  /* left/top se actualizan desde la animacion del mapa. */
   transition:
     transform 160ms ease,
     filter 160ms ease;
@@ -662,7 +662,7 @@ button {
     drop-shadow(0 4px 12px rgba(0, 0, 0, 0.55));
 }
 
-/* Elongated glow trail — extends behind the vehicle */
+/* Estela luminosa del vehiculo. */
 .vehicle-trail {
   position: absolute;
   top: calc(50% - 2px);
@@ -683,7 +683,7 @@ button {
   height: 5px;
 }
 
-/* Soft oval ground shadow */
+/* Sombra bajo el vehiculo. */
 .vehicle-shadow {
   position: absolute;
   top: calc(50% + 10px);
@@ -697,7 +697,7 @@ button {
   pointer-events: none;
 }
 
-/* Vehicle SVG wrapper — rotates to face direction of travel */
+/* El SVG gira segun la direccion del recorrido. */
 .vehicle-body {
   position: relative;
   z-index: 1;
@@ -715,7 +715,7 @@ button {
     drop-shadow(0 0 16px var(--marker-glow, rgba(16, 185, 129, 0.65)));
 }
 
-/* ID badge below vehicle */
+/* Etiqueta de la unidad. */
 .vehicle-label {
   position: absolute;
   bottom: 3px;

@@ -26,10 +26,10 @@ export default function SimulatedMap({
     return window.innerWidth > 760;
   });
 
-  // Vehicle DOM refs are updated at 60fps without React re-renders.
+  // Referencias para mover los vehiculos sin redibujar React.
   const vehiclePositionRefs = useRef({});
 
-  // 60fps animation loop: writes positions directly to DOM
+  // Animacion del mapa: actualiza la posicion directo en el DOM.
   useEffect(() => {
     if (vehicles.length === 0) return;
 
@@ -95,12 +95,12 @@ export default function SimulatedMap({
               </filter>
             </defs>
 
-            {/* City zone fills */}
+            {/* Zonas de la ciudad */}
             <g className="zone-fills">
               <rect x="51" y="23" width="28" height="44" rx="1.5" fill="rgba(59,130,246,0.045)" />
               <rect x="22" y="46" width="27" height="21" rx="1.5" fill="rgba(16,185,129,0.04)" />
               <rect x="22" y="23" width="27" height="22" rx="1.5" fill="rgba(245,158,11,0.03)" />
-              {/* Park / green area */}
+              {/* Area verde */}
               <rect x="36" y="70" width="12" height="8" rx="2" fill="rgba(16,185,129,0.1)" />
               <rect x="36.5" y="70.5" width="11" height="7" rx="1.5" fill="none" stroke="rgba(16,185,129,0.22)" strokeWidth="0.3" />
             </g>
@@ -111,7 +111,7 @@ export default function SimulatedMap({
               ))}
             </g>
 
-            {/* Primary road halos for depth */}
+            {/* Sombra suave de avenidas principales */}
             <g className="road-halos">
               {roads
                 .filter((r) => r.type === "primary")
@@ -142,7 +142,7 @@ export default function SimulatedMap({
               ))}
             </g>
 
-            {/* Center dashes on primary roads */}
+            {/* Lineas centrales de avenidas principales */}
             <g className="road-center-lines" opacity="0.28">
               {roads
                 .filter((r) => r.type === "primary")
@@ -217,19 +217,19 @@ export default function SimulatedMap({
                 ))}
             </g>
 
-            {/* Park label */}
+            {/* Etiqueta del parque */}
             <text x="42" y="74.8" fill="rgba(16,185,129,0.65)" fontSize="1.8" fontWeight="700" textAnchor="middle">
               Parque Central
             </text>
 
-            {/* Compass rose */}
+            {/* Brujula */}
             <g transform="translate(91,88)">
               <text fill="rgba(255,255,255,0.45)" fontSize="2" textAnchor="middle" fontWeight="900" y="-0.5">N</text>
               <line x1="0" y1="1" x2="0" y2="3.5" stroke="rgba(255,255,255,0.4)" strokeWidth="0.35" strokeLinecap="round" />
               <polygon points="0,-0.5 0.7,0.8 0,0.4 -0.7,0.8" fill="rgba(255,255,255,0.6)" />
             </g>
 
-            {/* Scale bar */}
+            {/* Escala */}
             <g transform="translate(10,91)">
               <line x1="0" y1="0" x2="8" y2="0" stroke="rgba(255,255,255,0.35)" strokeWidth="0.35" />
               <line x1="0" y1="-0.8" x2="0" y2="0.8" stroke="rgba(255,255,255,0.35)" strokeWidth="0.35" />
@@ -238,7 +238,7 @@ export default function SimulatedMap({
             </g>
           </svg>
 
-          {/* Vehicle marker positions are updated at 60fps via DOM refs. */}
+          {/* Los marcadores se mueven con las referencias del DOM. */}
           {vehicles.map((vehicle) => {
             const route = vehicleRoutes[vehicle.id];
             if (!route) return null;
